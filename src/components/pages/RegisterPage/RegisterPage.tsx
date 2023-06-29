@@ -9,6 +9,9 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { ClassNames } from "@emotion/react";
+import { httpClient } from "./../../../utils/httpclient";
+import axios from "axios"
+import { server } from "../../../Constants";
 
 type RegisterPageProps = {
   //
@@ -120,8 +123,9 @@ const RegisterPage: React.FC<any> = () => {
               <h3>Register</h3>
             </Typography>
             <Formik
-              onSubmit={(values, { setSubmitting }) => {
-                alert(JSON.stringify(values));
+              onSubmit={async (values, { setSubmitting }) => {
+                const result = await httpClient.post(server.REGISTER_URL, values);
+                alert(JSON.stringify(result.data));
 
                 setTimeout(() => {
                   setSubmitting(false);

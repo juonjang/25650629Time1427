@@ -91,7 +91,7 @@ const theme = createTheme({
   },
   spacing: 8,
   palette: {
-   primary:{main: "#5D8D73"},
+    primary: { main: "#004d40"},
     // primary: process.env.REACT_APP_IS_PRODUCTION == "0" ? blue : blueGrey,
     background: {
       default: "#CFD2D6",
