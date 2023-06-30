@@ -116,8 +116,12 @@ const RegisterPage: React.FC<any> = () => {
 
   return (
     <>
+
+        
+   
       <Box sx={classes.root}>
-        <Card sx={{ maxWidth: 345 }}>
+    
+        <Card sx={{ maxWidth: 400 }}>
           <CardContent>
             <Typography sx={{ fontSize: 20 ,justifyContent:"center",display:'flex'} } color="text.secondary" gutterBottom >
               <h3>Register</h3>
