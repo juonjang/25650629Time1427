@@ -124,7 +124,7 @@ const RegisterPage: React.FC<any> = () => {
         <Card sx={{ maxWidth: 400 }}>
           <CardContent>
             <Typography sx={{ fontSize: 20 ,justifyContent:"center",display:'flex'} } color="text.secondary" gutterBottom >
-              <h3>Register</h3>
+              Register
             </Typography>
             <Formik
               onSubmit={async (values, { setSubmitting }) => {
