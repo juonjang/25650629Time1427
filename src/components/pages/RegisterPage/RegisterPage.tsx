@@ -1,55 +1,39 @@
-import { json } from "node:stream/consumers";
 import * as React from "react";
-import { Form, Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Formik, FormikProps } from "formik";
-import { Box, Stack, SxProps, TextField, Theme } from "@mui/material";
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import { ClassNames } from "@emotion/react";
+import { Alert, Box, Button, Card, CardContent, Stack, SxProps, TextField, Theme, Typography } from "@mui/material";
+import { User } from "../../../types/user.type";
 import { httpClient } from "./../../../utils/httpclient";
-import axios from "axios"
 import { server } from "../../../Constants";
+import * as registerActions from "../../../actions/register.action";
+import { useDispatch, useSelector } from "react-redux";
+import { RootReducers } from "../../../reducers";
+import { useAppDispatch } from "../../../main";
 
 type RegisterPageProps = {
   //
 };
 
 const RegisterPage: React.FC<any> = () => {
-  const navigate = useNavigate();
-  const classes:SxProps<Theme> | any={
-    root:{display:'flex',justifyContent:"center"},
-    buttons:{marginTop:2}
-  }
+  const registerReducer = useSelector((state: RootReducers) => state.registerReducer);
 
-  const showFormV1 = ({
-    handleSubmit,
-    handleChange,
-    isSubmitting,
-    values,
-  }: FormikProps<any>) => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const classes: SxProps<Theme> | any = {
+    root: { display: "flex", justifyContent: "center" },
+    buttons: { marginTop: 2 },
+  };
+
+  const showFormV1 = ({ handleSubmit, handleChange, isSubmitting, values }: FormikProps<any>) => {
     return (
       <form onSubmit={handleSubmit}>
-        <label htmlFor="">Username : </label>
-        <input
-          type="text"
-          name="username"
-          id="username"
-          onChange={handleChange}
-          value={values.username}
-        />
+        <label>Username: </label>
+        <input type="text" name="username" id="username" onChange={handleChange} value={values.username} />
         <br />
-        <label htmlFor="">Password : </label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          onChange={handleChange}
-          value={values.password}
-        />
+        <label>Password: </label>
+        <input type="text" name="password" id="password" onChange={handleChange} value={values.password} />
         <br />
+
         <button type="submit" disabled={isSubmitting}>
           Submit
         </button>
@@ -57,12 +41,8 @@ const RegisterPage: React.FC<any> = () => {
       </form>
     );
   };
-  const showFormV2 = ({
-    handleSubmit,
-    handleChange,
-    isSubmitting,
-    values,
-  }: FormikProps<any>) => {
+
+  const showFormV2 = ({ handleSubmit, handleChange, isSubmitting, values }: FormikProps<User>) => {
     return (
       <form onSubmit={handleSubmit}>
         <TextField
@@ -77,80 +57,56 @@ const RegisterPage: React.FC<any> = () => {
           autoComplete="email"
           autoFocus
         />
+
         <TextField
           variant="outlined"
           margin="normal"
           required
           fullWidth
           id="password"
-          label="password"
+          label="Password"
           onChange={handleChange}
           value={values.password}
           type="password"
-
         />
         <br />
-        <Stack direction={"row"} spacing={2} sx={classes.buttons} >
-          <Button 
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={isSubmitting}
-          >
-            CREATE
-          </Button>
-          <Button
-            onClick={() => navigate("/login")}
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={isSubmitting}
-          >
+
+        {registerReducer.isError && <Alert severity="error">Register failed</Alert>}
+
+        <Stack direction="row" spacing={2} sx={classes.buttons}>
+          <Button onClick={() => navigate("/login")} type="button" fullWidth variant="outlined">
             Cancel
           </Button>
+          <Button type="submit" fullWidth variant="contained" color="primary" disabled={registerReducer.isFetching}>
+            Create
+          </Button>
         </Stack>
-
       </form>
     );
   };
 
+  const initialValues: User = { username: "", password: "" };
+
   return (
     <>
-
-        
-   
       <Box sx={classes.root}>
-    
-        <Card sx={{ maxWidth: 400 }}>
+        <Card sx={{ maxWidth: 345 }}>
           <CardContent>
-            <Typography sx={{ fontSize: 20 ,justifyContent:"center",display:'flex'} } color="text.secondary" gutterBottom >
+            <Typography gutterBottom variant="h5" component="h2">
               Register
             </Typography>
             <Formik
-              onSubmit={async (values, { setSubmitting }) => {
-                const result = await httpClient.post(server.REGISTER_URL, values);
-                alert(JSON.stringify(result.data));
-
-                setTimeout(() => {
-                  setSubmitting(false);
-                }, 2000);
+              onSubmit={async (values, {}) => {
+                dispatch(registerActions.register(values, navigate));
               }}
-              initialValues={{ username: "", password: "" }}
+              initialValues={initialValues}
             >
               {(props) => showFormV2(props)}
             </Formik>
           </CardContent>
         </Card>
-
-
-
-
-
-
-
       </Box>
     </>
   );
 };
-
 export default RegisterPage;

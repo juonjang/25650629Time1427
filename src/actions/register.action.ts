@@ -1,10 +1,12 @@
-import { User } from "./../../../mishos/src/types/user.type";
+import { history } from "../main";
 import {
+  OK,
   REGISTER_FAILED,
   REGISTER_FETCHING,
   REGISTER_SUCCESS,
   server,
 } from "../Constants";
+import { User } from "../types/user.type";
 import { httpClient } from "../utils/httpclient";
 
 export const setRegisterFetchingToState = () => ({
@@ -20,17 +22,24 @@ export const setRegisterFailedToState = () => ({
   type: REGISTER_FAILED,
 });
 
-export const register = (user: User) => {
+export const register = (user: User, navigate: any) => {
   return async (dispatch: any) => {
     try {
-      // begin connection...
-      dispatch(setRegisterFailedToState);
-
-      //connect
+      // begin connecting...
+      dispatch(setRegisterFetchingToState());
+      // connect
       const result = await httpClient.post(server.REGISTER_URL, user);
-      dispatch(setRegisterSuccessToState(result.data));
-    } catch (err) {
-      //error
+      if (result.data.result === OK) {
+        setTimeout(() => {
+          dispatch(setRegisterSuccessToState(result.data));
+          alert("Register Successfully");
+          navigate("/login");
+        }, 1000);
+      } else {
+        dispatch(setRegisterFailedToState());
+      }
+    } catch (error) {
+      // error
       dispatch(setRegisterFailedToState());
     }
   };
